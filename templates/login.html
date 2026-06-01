@@ -3,22 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <title>Login - DIM</title>
+
+    <style>
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:Arial, sans-serif;
+        }
+
+        body{
+            background:#f4f6f9;
+            height:100vh;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+        }
+
+        .card-login{
+            background:white;
+            width:420px;
+            padding:40px;
+            border-radius:20px;
+            box-shadow:0 8px 25px rgba(0,0,0,0.15);
+            text-align:center;
+        }
+
+        .logo{
+            font-size:60px;
+            font-weight:bold;
+            color:#3565B8;
+            margin-bottom:5px;
+        }
+
+        .subtitulo{
+            color:#666;
+            margin-bottom:35px;
+            font-size:18px;
+        }
+
+        h2{
+            color:#3565B8;
+            margin-bottom:25px;
+        }
+
+        input{
+            width:100%;
+            padding:12px;
+            margin-top:8px;
+            margin-bottom:20px;
+            border:1px solid #ccc;
+            border-radius:10px;
+            font-size:16px;
+        }
+
+        label{
+            display:block;
+            text-align:left;
+            font-weight:bold;
+            color:#333;
+        }
+
+        button{
+            width:100%;
+            background:#F4C542;
+            color:black;
+            border:none;
+            padding:14px;
+            border-radius:10px;
+            font-size:18px;
+            font-weight:bold;
+            cursor:pointer;
+            transition:0.3s;
+        }
+
+        button:hover{
+            background:#e6b936;
+        }
+
+        .cadastro{
+            margin-top:25px;
+        }
+
+        .cadastro a{
+            color:#3565B8;
+            text-decoration:none;
+            font-weight:bold;
+        }
+
+        .cadastro a:hover{
+            text-decoration:underline;
+        }
+
+    </style>
+
 </head>
 <body>
 
-    <h2>Login</h2>
+    <div class="card-login">
 
-    <form method="POST">
-        <label>Email:</label><br>
-        <input type="email" name="email" required><br><br>
+        <div class="logo">DIM</div>
 
-        <label>Senha:</label><br>
-        <input type="password" name="senha" required><br><br>
+        <div class="subtitulo">
+            Daily Interactive Management
+        </div>
 
-        <button type="submit">Entrar</button>
- </form>
-        <p>Não tem conta? <a href="/cadastro">Cadastre-se aqui</a></p>
-    
+        <h2>Login</h2>
+
+        <form method="POST">
+
+            <label>Email</label>
+            <input type="email" name="email" required>
+
+            <label>Senha</label>
+            <input type="password" name="senha" required>
+
+            <button type="submit">
+                Entrar
+            </button>
+
+        </form>
+
+        <div class="cadastro">
+            Não tem conta?
+            <a href="/cadastro">Cadastre-se aqui</a>
+        </div>
+
+    </div>
 
 </body>
 </html>

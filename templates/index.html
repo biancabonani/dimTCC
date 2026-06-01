@@ -2,19 +2,104 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>DIM - Sistema</title>
+    <title>DIM - Daily Interactive Management</title>
+
+    <style>
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:Arial, sans-serif;
+        }
+
+        body{
+            background:#f4f6f9;
+            height:100vh;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+        }
+
+        .container{
+            background:white;
+            padding:60px;
+            border-radius:25px;
+            box-shadow:0 10px 30px rgba(0,0,0,0.15);
+            text-align:center;
+            max-width:700px;
+        }
+
+        .logo{
+            font-size:80px;
+            font-weight:bold;
+            color:#3565B8;
+            margin-bottom:10px;
+        }
+
+        .subtitulo{
+            color:#666;
+            font-size:24px;
+            margin-bottom:35px;
+        }
+
+        h1{
+            color:#3565B8;
+            margin-bottom:20px;
+        }
+
+        p{
+            color:#555;
+            font-size:20px;
+            margin-bottom:40px;
+            line-height:1.6;
+        }
+
+        .btn{
+            display:inline-block;
+            background:#F4C542;
+            color:black;
+            text-decoration:none;
+            padding:16px 40px;
+            border-radius:12px;
+            font-size:20px;
+            font-weight:bold;
+            transition:0.3s;
+        }
+
+        .btn:hover{
+            background:#e6b936;
+            transform:translateY(-2px);
+        }
+
+    </style>
+
 </head>
 <body>
 
-    <h1>Bem-vinda ao sistema DIM</h1>
+    <div class="container">
 
-    <p>Gerencie suas tarefas e projetos de forma simples.</p>
+        <div class="logo">
+            DIM
+        </div>
 
-    <br>
+        <div class="subtitulo">
+            Daily Interactive Management
+        </div>
 
-    <a href="/login">
-        <button>Entrar no sistema</button>
-    </a>
+        <h1>Bem-vinda ao sistema DIM</h1>
+
+        <p>
+            Gerencie suas tarefas de forma simples, organizada e eficiente através
+            de um painel Kanban intuitivo com prioridades, prazos, responsáveis
+            e histórico de atividades.
+        </p>
+
+        <a href="/login" class="btn">
+            Entrar no Sistema
+        </a>
+
+    </div>
 
 </body>
 </html>

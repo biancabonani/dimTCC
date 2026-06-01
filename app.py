@@ -247,6 +247,61 @@ def dashboard():
     )
 
 
+@app.route("/perfil")
+def perfil():
+
+    if "usuario_id" not in session:
+        return redirect("/login")
+
+    conexao=get_db()
+    cursor=conexao.cursor()
+
+    cursor.execute("""
+
+    SELECT nome,email
+    FROM usuarios
+    WHERE id=?
+
+    """,(session["usuario_id"],))
+
+    usuario=cursor.fetchone()
+
+
+    cursor.execute("""
+
+    SELECT COUNT(*)
+    FROM tarefas
+    WHERE usuario_id=?
+
+    """,(session["usuario_id"],))
+
+    total_tarefas=cursor.fetchone()[0]
+
+
+    cursor.execute("""
+
+    SELECT COUNT(*)
+    FROM tarefas
+    WHERE usuario_id=?
+    AND status='Concluído'
+
+    """,(session["usuario_id"],))
+
+    tarefas_concluidas=cursor.fetchone()[0]
+
+
+    conexao.close()
+
+    return render_template(
+
+    "perfil.html",
+    usuario=usuario,
+    total_tarefas=total_tarefas,
+    tarefas_concluidas=tarefas_concluidas
+
+    )
+
+
 @app.route("/mudar/<int:id>/<status>")
 def mudar(id,status):
 

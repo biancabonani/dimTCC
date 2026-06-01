@@ -16,14 +16,11 @@ font-family:Arial;
 }
 
 body{
-
 background:#f4f6f9;
 padding:20px;
-
 }
 
 .topo{
-
 background:#1565C0;
 color:white;
 padding:25px;
@@ -33,79 +30,92 @@ justify-content:space-between;
 align-items:center;
 margin-bottom:30px;
 box-shadow:0px 5px 15px rgba(0,0,0,0.2);
-
 }
 
 .logo h1{
-
 font-size:45px;
-
 }
 
 .logo p{
-
 font-size:16px;
 opacity:0.9;
-
 }
 
-.logout button{
+.usuario-topo{
+display:flex;
+align-items:center;
+gap:15px;
+}
 
-background:#FBC02D;
+.usuario-topo span{
+font-size:16px;
+font-weight:bold;
+}
+
+.menu-botoes{
+display:flex;
+gap:10px;
+}
+
+.menu-botoes a{
+text-decoration:none;
+}
+
+.btn-perfil{
+background:white;
+color:#1565C0;
 border:none;
 padding:12px;
 border-radius:8px;
 font-weight:bold;
 cursor:pointer;
+}
 
+.btn-sair{
+background:#FBC02D;
+color:black;
+border:none;
+padding:12px;
+border-radius:8px;
+font-weight:bold;
+cursor:pointer;
 }
 
 .estatisticas{
-
 display:flex;
 justify-content:center;
 gap:20px;
 margin-bottom:25px;
-
 }
 
 .stat{
-
 background:white;
 padding:15px;
 width:170px;
 text-align:center;
 border-radius:12px;
 box-shadow:0px 3px 10px rgba(0,0,0,0.1);
-
 }
 
 .stat h2{
-
 color:#1565C0;
-
 }
 
-.formulario{
-
+.busca{
 display:flex;
 justify-content:center;
 gap:10px;
-margin-bottom:30px;
-
+margin-bottom:20px;
 }
 
-.formulario input,
-.formulario select{
-
+.busca input{
 padding:12px;
+width:350px;
 border-radius:10px;
 border:1px solid lightgray;
-
 }
 
-.formulario button{
-
+.busca button{
 background:#1565C0;
 color:white;
 border:none;
@@ -113,101 +123,117 @@ padding:12px;
 border-radius:10px;
 font-weight:bold;
 cursor:pointer;
+}
 
+.busca .limpar{
+background:#FBC02D;
+color:black;
+}
+
+.formulario{
+display:flex;
+justify-content:center;
+gap:10px;
+margin-bottom:30px;
+}
+
+.formulario input,
+.formulario select{
+padding:12px;
+border-radius:10px;
+border:1px solid lightgray;
+}
+
+.formulario button{
+background:#1565C0;
+color:white;
+border:none;
+padding:12px;
+border-radius:10px;
+font-weight:bold;
+cursor:pointer;
 }
 
 .kanban{
-
 display:flex;
 gap:25px;
 justify-content:center;
-
 }
 
 .coluna{
-
 background:white;
 width:350px;
 padding:20px;
 border-radius:15px;
 box-shadow:0px 3px 15px rgba(0,0,0,0.1);
-
 }
 
 .coluna h2{
-
 margin-bottom:20px;
 color:#1565C0;
-
 }
 
 .card{
-
 background:#f9f9f9;
 padding:15px;
 border-radius:12px;
 margin-bottom:15px;
 box-shadow:0px 2px 5px rgba(0,0,0,0.1);
-
 }
 
 .card b{
-
 font-size:20px;
-
 }
 
 .info{
-
 margin-top:15px;
 color:#555;
 line-height:30px;
-
 }
 
 .prioridade-alta{
-
 color:red;
 font-weight:bold;
-
 }
 
 .prioridade-media{
-
 color:#d79d00;
 font-weight:bold;
-
 }
 
 .prioridade-baixa{
-
 color:green;
 font-weight:bold;
-
 }
 
 .atrasada{
-
 background:#ffdada;
 padding:10px;
 margin-top:10px;
 border-radius:8px;
 font-weight:bold;
-
 }
 
 .proximo{
-
 background:#fff0c7;
 padding:10px;
 margin-top:10px;
 border-radius:8px;
 font-weight:bold;
+}
 
+.acoes{
+display:flex;
+gap:10px;
+margin-top:10px;
+}
+
+.acoes a{
+text-decoration:none;
+font-size:20px;
 }
 
 .historico{
-
 width:700px;
 margin:auto;
 margin-top:40px;
@@ -215,14 +241,11 @@ background:white;
 padding:20px;
 border-radius:15px;
 box-shadow:0px 3px 15px rgba(0,0,0,0.1);
-
 }
 
 .historico h2{
-
 color:#1565C0;
 margin-bottom:15px;
-
 }
 
 </style>
@@ -231,30 +254,29 @@ margin-bottom:15px;
 
 <body>
 
-
 <div class="topo">
 
 <div class="logo">
-
 <h1>DIM</h1>
 <p>Daily Interactive Management</p>
-
 </div>
 
-<div>
+<div class="usuario-topo">
 
-Olá {{session["nome"]}}
+<span>Olá {{session["nome"]}}</span>
 
-<div class="logout">
+<div class="menu-botoes">
+
+<a href="/perfil">
+<button class="btn-perfil">
+👤 Perfil
+</button>
+</a>
 
 <a href="/logout">
-
-<button>
-
+<button class="btn-sair">
 Sair
-
 </button>
-
 </a>
 
 </div>
@@ -268,34 +290,48 @@ Sair
 <div class="estatisticas">
 
 <div class="stat">
-
 <h2>{{total}}</h2>
 <p>Total</p>
-
 </div>
 
 <div class="stat">
-
 <h2>{{fazer}}</h2>
 <p>A Fazer</p>
-
 </div>
 
 <div class="stat">
-
 <h2>{{andamento}}</h2>
 <p>Em andamento</p>
-
 </div>
 
 <div class="stat">
-
 <h2>{{concluido}}</h2>
 <p>Concluído</p>
-
 </div>
 
 </div>
+
+
+
+<form method="GET" class="busca">
+
+<input
+type="text"
+name="busca"
+value="{{busca}}"
+placeholder="Buscar tarefa ou responsável">
+
+<button type="submit">
+🔍 Buscar
+</button>
+
+<a href="/dashboard">
+<button type="button" class="limpar">
+🧹 Limpar
+</button>
+</a>
+
+</form>
 
 
 
@@ -324,9 +360,7 @@ name="responsavel"
 placeholder="Responsável">
 
 <button>
-
 Adicionar
-
 </button>
 
 </form>
@@ -348,9 +382,7 @@ Adicionar
 <div class="card">
 
 <b>
-
 {{tarefa[1]}}
-
 </b>
 
 <div class="info">
@@ -383,9 +415,7 @@ Adicionar
 {% if tarefa[8] %}
 
 <div class="proximo">
-
 ⏰ Prazo próximo
-
 </div>
 
 {% endif %}
@@ -393,32 +423,42 @@ Adicionar
 {% if tarefa[7] %}
 
 <div class="atrasada">
-
 ⚠️ Tarefa atrasada
-
 </div>
 
 {% endif %}
 
-<br>
+<div class="acoes">
 
 {% if coluna=="A Fazer" %}
 
-<a href="/mudar/{{tarefa[0]}}/Em Andamento">
+<a href="/mudar/{{tarefa[0]}}/Em Andamento" title="Mover para Em Andamento">
 ➡️
 </a>
 
 {% elif coluna=="Em Andamento" %}
 
-<a href="/mudar/{{tarefa[0]}}/Concluído">
+<a href="/mudar/{{tarefa[0]}}/A Fazer" title="Voltar para A Fazer">
+⬅️
+</a>
+
+<a href="/mudar/{{tarefa[0]}}/Concluído" title="Mover para Concluído">
 ✅
+</a>
+
+{% elif coluna=="Concluído" %}
+
+<a href="/mudar/{{tarefa[0]}}/Em Andamento" title="Voltar para Em Andamento">
+↩️
 </a>
 
 {% endif %}
 
-<a href="/excluir/{{tarefa[0]}}">
+<a href="/excluir/{{tarefa[0]}}" title="Excluir tarefa">
 🗑️
 </a>
+
+</div>
 
 </div>
 
@@ -439,17 +479,13 @@ Adicionar
 <div class="historico">
 
 <h2>
-
 📜 Histórico de atividades
-
 </h2>
 
 {% for item in historico %}
 
 <div class="card">
-
 {{item[1]}}
-
 </div>
 
 {% endfor %}

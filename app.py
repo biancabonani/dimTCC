@@ -3,12 +3,12 @@ import sqlite3
 from datetime import datetime, date, timedelta
 
 app = Flask(__name__)
-app.secret_key="dim123"
+app.secret_key = "dim123"
 
 
 def get_db():
 
-    conexao=sqlite3.connect("dim.db")
+    conexao = sqlite3.connect("dim.db")
     return conexao
 
 
@@ -17,33 +17,31 @@ def home():
     return render_template("index.html")
 
 
-@app.route("/login",methods=["GET","POST"])
+@app.route("/login", methods=["GET", "POST"])
 def login():
 
-    if request.method=="POST":
+    if request.method == "POST":
 
-        email=request.form.get("email")
-        senha=request.form.get("senha")
+        email = request.form.get("email")
+        senha = request.form.get("senha")
 
-        conexao=get_db()
-        cursor=conexao.cursor()
+        conexao = get_db()
+        cursor = conexao.cursor()
 
         cursor.execute("""
-
-        SELECT id,nome,email
+        SELECT id, nome, email
         FROM usuarios
         WHERE email=? AND senha=?
+        """, (email, senha))
 
-        """,(email,senha))
-
-        usuario=cursor.fetchone()
+        usuario = cursor.fetchone()
 
         conexao.close()
 
         if usuario:
 
-            session["usuario_id"]=usuario[0]
-            session["nome"]=usuario[1]
+            session["usuario_id"] = usuario[0]
+            session["nome"] = usuario[1]
 
             return redirect("/dashboard")
 
@@ -52,29 +50,26 @@ def login():
     return render_template("login.html")
 
 
-@app.route("/cadastro",methods=["GET","POST"])
+@app.route("/cadastro", methods=["GET", "POST"])
 def cadastro():
 
-    if request.method=="POST":
+    if request.method == "POST":
 
-        nome=request.form.get("nome")
-        email=request.form.get("email")
-        senha=request.form.get("senha")
+        nome = request.form.get("nome")
+        email = request.form.get("email")
+        senha = request.form.get("senha")
 
-        conexao=get_db()
-        cursor=conexao.cursor()
+        conexao = get_db()
+        cursor = conexao.cursor()
 
         cursor.execute("""
-
         INSERT INTO usuarios(
-        nome,
-        email,
-        senha
+            nome,
+            email,
+            senha
         )
-
         VALUES(?,?,?)
-
-        """,(nome,email,senha))
+        """, (nome, email, senha))
 
         conexao.commit()
         conexao.close()
@@ -84,166 +79,338 @@ def cadastro():
     return render_template("cadastro.html")
 
 
-@app.route("/dashboard",methods=["GET","POST"])
+@app.route("/projetos", methods=["GET", "POST"])
+def projetos():
+
+    if "usuario_id" not in session:
+        return redirect("/login")
+
+    conexao = get_db()
+    cursor = conexao.cursor()
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS projetos(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nome TEXT NOT NULL,
+        descricao TEXT,
+        gerente_id INTEGER NOT NULL
+    )
+    """)
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS projeto_membros(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        projeto_id INTEGER NOT NULL,
+        usuario_id INTEGER NOT NULL,
+        papel TEXT DEFAULT 'Membro'
+    )
+    """)
+
+    if request.method == "POST":
+
+        nome = request.form.get("nome")
+        descricao = request.form.get("descricao")
+
+        if nome:
+
+            cursor.execute("""
+            INSERT INTO projetos(
+                nome,
+                descricao,
+                gerente_id
+            )
+            VALUES(?,?,?)
+            """, (
+                nome,
+                descricao,
+                session["usuario_id"]
+            ))
+
+            projeto_id = cursor.lastrowid
+
+            cursor.execute("""
+            INSERT INTO projeto_membros(
+                projeto_id,
+                usuario_id,
+                papel
+            )
+            VALUES(?,?,?)
+            """, (
+                projeto_id,
+                session["usuario_id"],
+                "Gerente"
+            ))
+
+            cursor.execute("""
+            INSERT INTO historico(
+                mensagem
+            )
+            VALUES(?)
+            """, (
+                f'{session["nome"]} criou o projeto "{nome}"',
+            ))
+
+            conexao.commit()
+
+    cursor.execute("""
+    SELECT DISTINCT
+        projetos.id,
+        projetos.nome,
+        projetos.descricao,
+        projetos.gerente_id
+    FROM projetos
+    LEFT JOIN projeto_membros
+    ON projetos.id = projeto_membros.projeto_id
+    WHERE projetos.gerente_id=?
+    OR projeto_membros.usuario_id=?
+    ORDER BY projetos.id DESC
+    """, (
+        session["usuario_id"],
+        session["usuario_id"]
+    ))
+
+    projetos = cursor.fetchall()
+
+    conexao.close()
+
+    return render_template(
+        "projetos.html",
+        projetos=projetos
+    )
+
+
+@app.route("/selecionar_projeto/<int:id>")
+def selecionar_projeto(id):
+
+    if "usuario_id" not in session:
+        return redirect("/login")
+
+    conexao = get_db()
+    cursor = conexao.cursor()
+
+    cursor.execute("""
+    SELECT id, nome
+    FROM projetos
+    WHERE id=?
+    AND gerente_id=?
+    """, (
+        id,
+        session["usuario_id"]
+    ))
+
+    projeto = cursor.fetchone()
+
+    if projeto:
+
+        session["projeto_id"] = projeto[0]
+        session["projeto_nome"] = projeto[1]
+
+    conexao.close()
+
+    return redirect("/dashboard")
+
+
+@app.route("/limpar_projeto")
+def limpar_projeto():
+
+    session.pop("projeto_id", None)
+    session.pop("projeto_nome", None)
+
+    return redirect("/dashboard")
+
+
+@app.route("/dashboard", methods=["GET", "POST"])
 def dashboard():
 
     if "usuario_id" not in session:
         return redirect("/login")
 
-    conexao=get_db()
-    cursor=conexao.cursor()
+    conexao = get_db()
+    cursor = conexao.cursor()
 
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS historico(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    mensagem TEXT
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        mensagem TEXT
     )
     """)
 
-
-    if request.method=="POST":
-
-        tarefa=request.form.get("tarefa")
-        prioridade=request.form.get("prioridade")
-        prazo=request.form.get("prazo")
-        responsavel=request.form.get("responsavel")
-
-        cursor.execute("""
-
-        INSERT INTO tarefas(
-        tarefa,
-        usuario_id,
-        prioridade,
-        prazo,
-        responsavel
-        )
-
-        VALUES(?,?,?,?,?)
-
-        """,(
-
-        tarefa,
-        session["usuario_id"],
-        prioridade,
-        prazo,
-        responsavel
-
-        ))
-
-        cursor.execute("""
-
-        INSERT INTO historico(
-        mensagem
-        )
-
-        VALUES(?)
-
-        """,(
-
-        f'{session["nome"]} criou "{tarefa}"',
-
-        ))
-
-        conexao.commit()
-
-
-    busca=request.args.get("busca","")
-
     cursor.execute("""
+    CREATE TABLE IF NOT EXISTS projetos(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nome TEXT NOT NULL,
+        descricao TEXT,
+        gerente_id INTEGER NOT NULL
+    )
+    """)
 
-    SELECT *
-    FROM tarefas
-    WHERE usuario_id=?
+    projeto_id = session.get("projeto_id")
+    projeto_nome = session.get("projeto_nome")
 
-    """,(session["usuario_id"],))
+    if request.method == "POST":
 
-    tarefas=cursor.fetchall()
+        tarefa = request.form.get("tarefa")
+        prioridade = request.form.get("prioridade")
+        prazo = request.form.get("prazo")
+        responsavel = request.form.get("responsavel")
 
+        if tarefa:
+
+            cursor.execute("""
+            INSERT INTO tarefas(
+                tarefa,
+                usuario_id,
+                projeto_id,
+                prioridade,
+                prazo,
+                responsavel
+            )
+            VALUES(?,?,?,?,?,?)
+            """, (
+                tarefa,
+                session["usuario_id"],
+                projeto_id,
+                prioridade,
+                prazo,
+                responsavel
+            ))
+
+            if projeto_nome:
+
+                mensagem = f'{session["nome"]} criou "{tarefa}" no projeto "{projeto_nome}"'
+
+            else:
+
+                mensagem = f'{session["nome"]} criou "{tarefa}"'
+
+            cursor.execute("""
+            INSERT INTO historico(
+                mensagem
+            )
+            VALUES(?)
+            """, (
+                mensagem,
+            ))
+
+            conexao.commit()
+
+    busca = request.args.get("busca", "")
+
+    if projeto_id:
+
+        cursor.execute("""
+        SELECT
+            id,
+            tarefa,
+            status,
+            usuario_id,
+            prioridade,
+            prazo,
+            responsavel
+        FROM tarefas
+        WHERE usuario_id=?
+        AND projeto_id=?
+        """, (
+            session["usuario_id"],
+            projeto_id
+        ))
+
+    else:
+
+        cursor.execute("""
+        SELECT
+            id,
+            tarefa,
+            status,
+            usuario_id,
+            prioridade,
+            prazo,
+            responsavel
+        FROM tarefas
+        WHERE usuario_id=?
+        """, (
+            session["usuario_id"],
+        ))
+
+    tarefas = cursor.fetchall()
 
     if busca:
 
-        tarefas=[
+        tarefas = [
 
-        t for t in tarefas
+            t for t in tarefas
 
-        if busca.lower() in str(t[1]).lower()
-        or busca.lower() in str(t[6]).lower()
+            if busca.lower() in str(t[1]).lower()
+            or busca.lower() in str(t[6]).lower()
+            or busca.lower() in str(t[4]).lower()
+            or busca.lower() in str(t[2]).lower()
 
         ]
 
+    tarefas_novas = []
 
-    tarefas_novas=[]
-
-    hoje=date.today()
+    hoje = date.today()
 
     for tarefa in tarefas:
 
-        tarefa=list(tarefa)
+        tarefa = list(tarefa)
 
-        atrasada=False
-        proximo=False
+        atrasada = False
+        proximo = False
 
         if tarefa[5]:
 
             try:
 
-                prazo=datetime.strptime(
-                tarefa[5],
-                "%Y-%m-%d"
+                prazo = datetime.strptime(
+                    tarefa[5],
+                    "%Y-%m-%d"
                 ).date()
 
-                if prazo<hoje and tarefa[2]!="Concluído":
+                if prazo < hoje and tarefa[2] != "Concluído":
 
-                    atrasada=True
+                    atrasada = True
 
-                elif hoje<=prazo<=hoje+timedelta(days=2):
+                elif hoje <= prazo <= hoje + timedelta(days=2):
 
-                    proximo=True
+                    proximo = True
 
             except:
                 pass
-
 
         tarefa.append(atrasada)
         tarefa.append(proximo)
 
         tarefas_novas.append(tarefa)
 
+    tarefas = tarefas_novas
 
-    tarefas=tarefas_novas
-
-
-    total=len(tarefas)
-    fazer=len([t for t in tarefas if t[2]=="A Fazer"])
-    andamento=len([t for t in tarefas if t[2]=="Em Andamento"])
-    concluido=len([t for t in tarefas if t[2]=="Concluído"])
-
+    total = len(tarefas)
+    fazer = len([t for t in tarefas if t[2] == "A Fazer"])
+    andamento = len([t for t in tarefas if t[2] == "Em Andamento"])
+    concluido = len([t for t in tarefas if t[2] == "Concluído"])
 
     cursor.execute("""
-
     SELECT *
     FROM historico
     ORDER BY id DESC
     LIMIT 8
-
     """)
 
-    historico=cursor.fetchall()
+    historico = cursor.fetchall()
 
     conexao.close()
 
     return render_template(
-
-    "dashboard.html",
-
-    tarefas=tarefas,
-    historico=historico,
-    busca=busca,
-    total=total,
-    fazer=fazer,
-    andamento=andamento,
-    concluido=concluido
-
+        "dashboard.html",
+        tarefas=tarefas,
+        historico=historico,
+        busca=busca,
+        total=total,
+        fazer=fazer,
+        andamento=andamento,
+        concluido=concluido,
+        projeto_nome=projeto_nome
     )
 
 
@@ -253,96 +420,85 @@ def perfil():
     if "usuario_id" not in session:
         return redirect("/login")
 
-    conexao=get_db()
-    cursor=conexao.cursor()
+    conexao = get_db()
+    cursor = conexao.cursor()
 
     cursor.execute("""
-
-    SELECT nome,email
+    SELECT nome, email
     FROM usuarios
     WHERE id=?
+    """, (
+        session["usuario_id"],
+    ))
 
-    """,(session["usuario_id"],))
-
-    usuario=cursor.fetchone()
-
+    usuario = cursor.fetchone()
 
     cursor.execute("""
-
     SELECT COUNT(*)
     FROM tarefas
     WHERE usuario_id=?
+    """, (
+        session["usuario_id"],
+    ))
 
-    """,(session["usuario_id"],))
-
-    total_tarefas=cursor.fetchone()[0]
-
+    total_tarefas = cursor.fetchone()[0]
 
     cursor.execute("""
-
     SELECT COUNT(*)
     FROM tarefas
     WHERE usuario_id=?
     AND status='Concluído'
+    """, (
+        session["usuario_id"],
+    ))
 
-    """,(session["usuario_id"],))
-
-    tarefas_concluidas=cursor.fetchone()[0]
-
+    tarefas_concluidas = cursor.fetchone()[0]
 
     conexao.close()
 
     return render_template(
-
-    "perfil.html",
-    usuario=usuario,
-    total_tarefas=total_tarefas,
-    tarefas_concluidas=tarefas_concluidas
-
+        "perfil.html",
+        usuario=usuario,
+        total_tarefas=total_tarefas,
+        tarefas_concluidas=tarefas_concluidas
     )
 
 
 @app.route("/mudar/<int:id>/<status>")
-def mudar(id,status):
+def mudar(id, status):
 
-    conexao=get_db()
-    cursor=conexao.cursor()
+    conexao = get_db()
+    cursor = conexao.cursor()
 
     cursor.execute("""
-
     SELECT tarefa
     FROM tarefas
     WHERE id=?
+    """, (
+        id,
+    ))
 
-    """,(id,))
-
-    tarefa=cursor.fetchone()
+    tarefa = cursor.fetchone()
 
     cursor.execute("""
-
     UPDATE tarefas
     SET status=?
     WHERE id=?
-
-    """,(status,id))
-
+    """, (
+        status,
+        id
+    ))
 
     if tarefa:
 
         cursor.execute("""
-
         INSERT INTO historico(
-        mensagem
+            mensagem
         )
-
         VALUES(?)
-
-        """,(
-
-        f'{session["nome"]} moveu "{tarefa[0]}" para {status}',
-
+        """, (
+            f'{session["nome"]} moveu "{tarefa[0]}" para {status}',
         ))
-
 
     conexao.commit()
     conexao.close()
@@ -353,43 +509,36 @@ def mudar(id,status):
 @app.route("/excluir/<int:id>")
 def excluir(id):
 
-    conexao=get_db()
-    cursor=conexao.cursor()
+    conexao = get_db()
+    cursor = conexao.cursor()
 
     cursor.execute("""
-
     SELECT tarefa
     FROM tarefas
     WHERE id=?
+    """, (
+        id,
+    ))
 
-    """,(id,))
-
-    tarefa=cursor.fetchone()
-
+    tarefa = cursor.fetchone()
 
     if tarefa:
 
         cursor.execute("""
-
         INSERT INTO historico(
-        mensagem
+            mensagem
         )
-
         VALUES(?)
-
-        """,(
-
-        f'{session["nome"]} excluiu "{tarefa[0]}"',
-
+        """, (
+            f'{session["nome"]} excluiu "{tarefa[0]}"',
         ))
 
-
     cursor.execute("""
-
     DELETE FROM tarefas
     WHERE id=?
-
-    """,(id,))
+    """, (
+        id,
+    ))
 
     conexao.commit()
     conexao.close()
@@ -405,5 +554,5 @@ def logout():
     return redirect("/login")
 
 
-if __name__=="__main__":
+if __name__ == "__main__":
     app.run(debug=True)

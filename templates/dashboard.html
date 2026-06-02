@@ -61,6 +61,16 @@ gap:10px;
 text-decoration:none;
 }
 
+.btn-projetos{
+background:white;
+color:#1565C0;
+border:none;
+padding:12px;
+border-radius:8px;
+font-weight:bold;
+cursor:pointer;
+}
+
 .btn-perfil{
 background:white;
 color:#1565C0;
@@ -76,6 +86,40 @@ background:#FBC02D;
 color:black;
 border:none;
 padding:12px;
+border-radius:8px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.projeto-atual{
+background:white;
+width:700px;
+margin:0 auto 25px auto;
+padding:18px;
+border-radius:15px;
+box-shadow:0px 3px 10px rgba(0,0,0,0.1);
+text-align:center;
+}
+
+.projeto-atual h2{
+color:#1565C0;
+margin-bottom:8px;
+}
+
+.projeto-atual p{
+color:#555;
+}
+
+.projeto-atual a{
+text-decoration:none;
+}
+
+.projeto-atual button{
+margin-top:12px;
+background:#FBC02D;
+color:black;
+border:none;
+padding:10px 18px;
 border-radius:8px;
 font-weight:bold;
 cursor:pointer;
@@ -267,6 +311,12 @@ margin-bottom:15px;
 
 <div class="menu-botoes">
 
+<a href="/projetos">
+<button class="btn-projetos">
+📁 Projetos
+</button>
+</a>
+
 <a href="/perfil">
 <button class="btn-perfil">
 👤 Perfil
@@ -282,6 +332,42 @@ Sair
 </div>
 
 </div>
+
+</div>
+
+
+
+<div class="projeto-atual">
+
+{% if projeto_nome %}
+
+<h2>📁 Projeto atual: {{ projeto_nome }}</h2>
+
+<p>
+As tarefas exibidas abaixo pertencem ao projeto selecionado.
+</p>
+
+<a href="/limpar_projeto">
+<button>
+Ver todas as tarefas
+</button>
+</a>
+
+{% else %}
+
+<h2>📁 Nenhum projeto selecionado</h2>
+
+<p>
+Você está visualizando todas as suas tarefas. Para trabalhar em um projeto específico, acesse a tela de Projetos.
+</p>
+
+<a href="/projetos">
+<button>
+Selecionar Projeto
+</button>
+</a>
+
+{% endif %}
 
 </div>
 

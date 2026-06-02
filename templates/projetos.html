@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+<meta charset="UTF-8">
+<title>Projetos - DIM</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#f4f6f9;
+padding:30px;
+}
+
+.topo{
+background:#1565C0;
+color:white;
+padding:25px;
+border-radius:15px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:30px;
+box-shadow:0px 5px 15px rgba(0,0,0,0.2);
+}
+
+.logo h1{
+font-size:45px;
+}
+
+.logo p{
+font-size:16px;
+opacity:0.9;
+}
+
+.botoes-topo{
+display:flex;
+gap:10px;
+}
+
+.botoes-topo a{
+text-decoration:none;
+}
+
+.btn-amarelo{
+background:#FBC02D;
+color:black;
+border:none;
+padding:12px;
+border-radius:8px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.btn-branco{
+background:white;
+color:#1565C0;
+border:none;
+padding:12px;
+border-radius:8px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.container{
+display:flex;
+gap:30px;
+justify-content:center;
+align-items:flex-start;
+}
+
+.card-form{
+background:white;
+width:420px;
+padding:25px;
+border-radius:15px;
+box-shadow:0px 3px 15px rgba(0,0,0,0.1);
+}
+
+.card-form h2{
+color:#1565C0;
+margin-bottom:20px;
+}
+
+.card-form label{
+display:block;
+font-weight:bold;
+margin-bottom:6px;
+color:#333;
+}
+
+.card-form input,
+.card-form textarea{
+width:100%;
+padding:12px;
+border:1px solid lightgray;
+border-radius:10px;
+margin-bottom:15px;
+font-size:15px;
+}
+
+.card-form textarea{
+height:100px;
+resize:none;
+}
+
+.card-form button{
+background:#1565C0;
+color:white;
+border:none;
+padding:12px;
+border-radius:10px;
+font-weight:bold;
+cursor:pointer;
+width:100%;
+font-size:16px;
+}
+
+.lista-projetos{
+background:white;
+width:600px;
+padding:25px;
+border-radius:15px;
+box-shadow:0px 3px 15px rgba(0,0,0,0.1);
+}
+
+.lista-projetos h2{
+color:#1565C0;
+margin-bottom:20px;
+}
+
+.projeto{
+background:#f9f9f9;
+padding:18px;
+border-radius:12px;
+margin-bottom:15px;
+box-shadow:0px 2px 5px rgba(0,0,0,0.08);
+}
+
+.projeto h3{
+color:#1565C0;
+margin-bottom:8px;
+}
+
+.projeto p{
+color:#555;
+margin-bottom:12px;
+line-height:1.5;
+}
+
+.projeto a{
+text-decoration:none;
+}
+
+.projeto button{
+background:#FBC02D;
+color:black;
+border:none;
+padding:10px;
+border-radius:8px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.vazio{
+color:#777;
+font-style:italic;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="topo">
+
+<div class="logo">
+<h1>DIM</h1>
+<p>Daily Interactive Management</p>
+</div>
+
+<div class="botoes-topo">
+
+<a href="/dashboard">
+<button class="btn-branco">
+Dashboard
+</button>
+</a>
+
+<a href="/perfil">
+<button class="btn-branco">
+👤 Perfil
+</button>
+</a>
+
+<a href="/logout">
+<button class="btn-amarelo">
+Sair
+</button>
+</a>
+
+</div>
+
+</div>
+
+
+
+<div class="container">
+
+<div class="card-form">
+
+<h2>Criar Projeto</h2>
+
+<form method="POST">
+
+<label>Nome do Projeto</label>
+<input
+type="text"
+name="nome"
+placeholder="Ex: Sistema DIM"
+required>
+
+<label>Descrição</label>
+<textarea
+name="descricao"
+placeholder="Descreva o objetivo do projeto"></textarea>
+
+<button type="submit">
+Criar Projeto
+</button>
+
+</form>
+
+</div>
+
+
+
+<div class="lista-projetos">
+
+<h2>Meus Projetos</h2>
+
+{% if projetos %}
+
+{% for projeto in projetos %}
+
+<div class="projeto">
+
+<h3>{{ projeto[1] }}</h3>
+
+<p>
+{{ projeto[2] if projeto[2] else "Sem descrição cadastrada." }}
+</p>
+
+<a href="/selecionar_projeto/{{ projeto[0] }}">
+<button>
+Abrir Projeto
+</button>
+</a>
+
+</div>
+
+{% endfor %}
+
+{% else %}
+
+<p class="vazio">
+Nenhum projeto cadastrado ainda.
+</p>
+
+{% endif %}
+
+</div>
+
+</div>
+
+</body>
+</html>

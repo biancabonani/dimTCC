@@ -414,6 +414,69 @@ def dashboard():
     )
 
 
+@app.route("/tarefas")
+def tarefas():
+
+    if "usuario_id" not in session:
+        return redirect("/login")
+
+    conexao = get_db()
+    cursor = conexao.cursor()
+
+    cursor.execute("""
+    SELECT
+        tarefas.id,
+        tarefas.tarefa,
+        tarefas.status,
+        tarefas.prioridade,
+        tarefas.prazo,
+        tarefas.responsavel,
+        projetos.nome
+    FROM tarefas
+    LEFT JOIN projetos
+    ON tarefas.projeto_id = projetos.id
+    WHERE tarefas.usuario_id=?
+    ORDER BY tarefas.id DESC
+    """, (
+        session["usuario_id"],
+    ))
+
+    tarefas = cursor.fetchall()
+
+    conexao.close()
+
+    return render_template(
+        "tarefas.html",
+        tarefas=tarefas
+    )
+
+
+@app.route("/notificacoes")
+def notificacoes():
+
+    if "usuario_id" not in session:
+        return redirect("/login")
+
+    conexao = get_db()
+    cursor = conexao.cursor()
+
+    cursor.execute("""
+    SELECT *
+    FROM historico
+    ORDER BY id DESC
+    LIMIT 20
+    """)
+
+    notificacoes = cursor.fetchall()
+
+    conexao.close()
+
+    return render_template(
+        "notificacoes.html",
+        notificacoes=notificacoes
+    )
+
+
 @app.route("/perfil")
 def perfil():
 

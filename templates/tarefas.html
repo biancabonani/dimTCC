@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+<meta charset="UTF-8">
+<title>Tarefas - DIM</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#f4f6f9;
+padding:30px;
+}
+
+.topo{
+background:#1565C0;
+color:white;
+padding:25px;
+border-radius:15px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:30px;
+box-shadow:0px 5px 15px rgba(0,0,0,0.2);
+}
+
+.logo h1{
+font-size:45px;
+}
+
+.logo p{
+font-size:16px;
+opacity:0.9;
+}
+
+.menu{
+display:flex;
+gap:10px;
+}
+
+.menu a{
+text-decoration:none;
+}
+
+.menu button{
+background:white;
+color:#1565C0;
+border:none;
+padding:12px;
+border-radius:8px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.menu .sair{
+background:#FBC02D;
+color:black;
+}
+
+.container{
+background:white;
+padding:25px;
+border-radius:15px;
+box-shadow:0px 3px 15px rgba(0,0,0,0.1);
+}
+
+h2{
+color:#1565C0;
+margin-bottom:20px;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+}
+
+th{
+background:#1565C0;
+color:white;
+padding:14px;
+text-align:left;
+}
+
+td{
+padding:14px;
+border-bottom:1px solid #ddd;
+color:#333;
+}
+
+tr:hover{
+background:#f4f6f9;
+}
+
+.status{
+font-weight:bold;
+color:#1565C0;
+}
+
+.alta{
+color:red;
+font-weight:bold;
+}
+
+.media{
+color:#d79d00;
+font-weight:bold;
+}
+
+.baixa{
+color:green;
+font-weight:bold;
+}
+
+.vazio{
+text-align:center;
+color:#777;
+font-style:italic;
+padding:30px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="topo">
+
+<div class="logo">
+<h1>DIM</h1>
+<p>Daily Interactive Management</p>
+</div>
+
+<div class="menu">
+
+<a href="/dashboard">
+<button>Dashboard</button>
+</a>
+
+<a href="/projetos">
+<button>Projetos</button>
+</a>
+
+<a href="/tarefas">
+<button>Tarefas</button>
+</a>
+
+<a href="/notificacoes">
+<button>Notificações</button>
+</a>
+
+<a href="/perfil">
+<button>Perfil</button>
+</a>
+
+<a href="/logout">
+<button class="sair">Sair</button>
+</a>
+
+</div>
+
+</div>
+
+
+
+<div class="container">
+
+<h2>Lista de Tarefas</h2>
+
+{% if tarefas %}
+
+<table>
+
+<thead>
+<tr>
+<th>Tarefa</th>
+<th>Projeto</th>
+<th>Responsável</th>
+<th>Prioridade</th>
+<th>Prazo</th>
+<th>Status</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for tarefa in tarefas %}
+
+<tr>
+
+<td>{{ tarefa[1] }}</td>
+
+<td>{{ tarefa[6] if tarefa[6] else "Sem projeto" }}</td>
+
+<td>{{ tarefa[5] if tarefa[5] else "Não informado" }}</td>
+
+<td>
+
+{% if tarefa[3]=="Alta" %}
+<span class="alta">Alta</span>
+{% elif tarefa[3]=="Média" %}
+<span class="media">Média</span>
+{% else %}
+<span class="baixa">Baixa</span>
+{% endif %}
+
+</td>
+
+<td>{{ tarefa[4] if tarefa[4] else "Sem prazo" }}</td>
+
+<td class="status">{{ tarefa[2] }}</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+{% else %}
+
+<div class="vazio">
+Nenhuma tarefa cadastrada até o momento.
+</div>
+
+{% endif %}
+
+</div>
+
+</body>
+</html>

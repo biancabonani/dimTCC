@@ -3,7 +3,7 @@
 
 <head>
 <meta charset="UTF-8">
-<title>Perfil - DIM</title>
+<title>Notificações - DIM</title>
 
 <style>
 
@@ -16,7 +16,7 @@ font-family:Arial,sans-serif;
 
 body{
 background:#f4f6f9;
-padding:20px;
+padding:30px;
 }
 
 .topo{
@@ -43,7 +43,6 @@ opacity:0.9;
 .menu{
 display:flex;
 gap:10px;
-align-items:center;
 }
 
 .menu a{
@@ -60,69 +59,58 @@ font-weight:bold;
 cursor:pointer;
 }
 
-.sair{
-background:#FBC02D !important;
-color:black !important;
+.menu .sair{
+background:#FBC02D;
+color:black;
 }
 
 .container{
-max-width:1000px;
-margin:auto;
-}
-
-.card-principal{
-background:white;
-padding:30px;
-border-radius:20px;
-box-shadow:0px 3px 15px rgba(0,0,0,0.1);
-margin-bottom:25px;
-}
-
-.card-principal h2{
-color:#1565C0;
-margin-bottom:20px;
-font-size:36px;
-text-align:center;
-}
-
-.info{
-background:#f9f9f9;
-padding:20px;
-border-radius:15px;
-margin-top:20px;
-box-shadow:0px 2px 8px rgba(0,0,0,0.08);
-}
-
-.info p{
-font-size:20px;
-margin-bottom:15px;
-color:#333;
-}
-
-.estatisticas{
 display:flex;
-justify-content:center;
 gap:25px;
-margin-top:30px;
+justify-content:center;
+align-items:flex-start;
 }
 
-.card{
+.lista{
 background:white;
+width:850px;
 padding:25px;
 border-radius:15px;
-width:250px;
-text-align:center;
 box-shadow:0px 3px 15px rgba(0,0,0,0.1);
 }
 
-.card h3{
-font-size:42px;
+.lista h2{
 color:#1565C0;
-margin-bottom:10px;
+margin-bottom:20px;
 }
 
-.card p{
-color:#555;
+.notificacao{
+background:#f9f9f9;
+padding:18px;
+border-radius:12px;
+margin-bottom:15px;
+box-shadow:0px 2px 5px rgba(0,0,0,0.08);
+border-left:6px solid #FBC02D;
+}
+
+.notificacao p{
+color:#333;
+font-size:16px;
+line-height:1.5;
+}
+
+.notificacao span{
+display:block;
+margin-top:8px;
+color:#777;
+font-size:14px;
+}
+
+.vazio{
+text-align:center;
+color:#777;
+font-style:italic;
+padding:30px;
 }
 
 </style>
@@ -141,23 +129,23 @@ color:#555;
 <div class="menu">
 
 <a href="/dashboard">
-<button>🏠 Dashboard</button>
+<button>Dashboard</button>
 </a>
 
 <a href="/projetos">
-<button>📁 Projetos</button>
+<button>Projetos</button>
 </a>
 
 <a href="/tarefas">
-<button>📋 Tarefas</button>
+<button>Tarefas</button>
 </a>
 
 <a href="/notificacoes">
-<button>🔔 Notificações</button>
+<button>Notificações</button>
 </a>
 
 <a href="/perfil">
-<button>👤 Perfil</button>
+<button>Perfil</button>
 </a>
 
 <a href="/logout">
@@ -172,39 +160,31 @@ color:#555;
 
 <div class="container">
 
-<div class="card-principal">
+<div class="lista">
 
-<h2>Perfil do Usuário</h2>
+<h2>Notificações</h2>
 
-<div class="info">
+{% if notificacoes %}
 
-<p><b>Nome:</b> {{ usuario[0] }}</p>
+{% for notificacao in notificacoes %}
 
-<p><b>Email:</b> {{ usuario[1] }}</p>
+<div class="notificacao">
 
-<p><b>Função:</b> Membro do Time</p>
+<p>{{ notificacao[1] }}</p>
 
-</div>
-
-</div>
-
-<div class="estatisticas">
-
-<div class="card">
-
-<h3>{{ total_tarefas }}</h3>
-
-<p>Total de tarefas</p>
+<span>Atualização do sistema DIM</span>
 
 </div>
 
-<div class="card">
+{% endfor %}
 
-<h3>{{ tarefas_concluidas }}</h3>
+{% else %}
 
-<p>Tarefas concluídas</p>
-
+<div class="vazio">
+Nenhuma notificação registrada até o momento.
 </div>
+
+{% endif %}
 
 </div>
 

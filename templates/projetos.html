@@ -16,7 +16,7 @@ font-family:Arial,sans-serif;
 
 body{
 background:#f4f6f9;
-padding:30px;
+padding:20px;
 }
 
 .topo{
@@ -40,26 +40,17 @@ font-size:16px;
 opacity:0.9;
 }
 
-.botoes-topo{
+.menu{
 display:flex;
 gap:10px;
+align-items:center;
 }
 
-.botoes-topo a{
+.menu a{
 text-decoration:none;
 }
 
-.btn-amarelo{
-background:#FBC02D;
-color:black;
-border:none;
-padding:12px;
-border-radius:8px;
-font-weight:bold;
-cursor:pointer;
-}
-
-.btn-branco{
+.menu button{
 background:white;
 color:#1565C0;
 border:none;
@@ -67,6 +58,11 @@ padding:12px;
 border-radius:8px;
 font-weight:bold;
 cursor:pointer;
+}
+
+.sair{
+background:#FBC02D !important;
+color:black !important;
 }
 
 .container{
@@ -92,8 +88,7 @@ margin-bottom:20px;
 .card-form label{
 display:block;
 font-weight:bold;
-margin-bottom:6px;
-color:#333;
+margin-bottom:8px;
 }
 
 .card-form input,
@@ -103,7 +98,6 @@ padding:12px;
 border:1px solid lightgray;
 border-radius:10px;
 margin-bottom:15px;
-font-size:15px;
 }
 
 .card-form textarea{
@@ -112,20 +106,19 @@ resize:none;
 }
 
 .card-form button{
+width:100%;
 background:#1565C0;
 color:white;
 border:none;
-padding:12px;
+padding:14px;
 border-radius:10px;
 font-weight:bold;
 cursor:pointer;
-width:100%;
-font-size:16px;
 }
 
 .lista-projetos{
 background:white;
-width:600px;
+width:650px;
 padding:25px;
 border-radius:15px;
 box-shadow:0px 3px 15px rgba(0,0,0,0.1);
@@ -146,12 +139,12 @@ box-shadow:0px 2px 5px rgba(0,0,0,0.08);
 
 .projeto h3{
 color:#1565C0;
-margin-bottom:8px;
+margin-bottom:10px;
 }
 
 .projeto p{
 color:#555;
-margin-bottom:12px;
+margin-bottom:15px;
 line-height:1.5;
 }
 
@@ -163,7 +156,7 @@ text-decoration:none;
 background:#FBC02D;
 color:black;
 border:none;
-padding:10px;
+padding:10px 15px;
 border-radius:8px;
 font-weight:bold;
 cursor:pointer;
@@ -187,24 +180,30 @@ font-style:italic;
 <p>Daily Interactive Management</p>
 </div>
 
-<div class="botoes-topo">
+<div class="menu">
 
 <a href="/dashboard">
-<button class="btn-branco">
-Dashboard
-</button>
+<button>🏠 Dashboard</button>
+</a>
+
+<a href="/projetos">
+<button>📁 Projetos</button>
+</a>
+
+<a href="/tarefas">
+<button>📋 Tarefas</button>
+</a>
+
+<a href="/notificacoes">
+<button>🔔 Notificações</button>
 </a>
 
 <a href="/perfil">
-<button class="btn-branco">
-👤 Perfil
-</button>
+<button>👤 Perfil</button>
 </a>
 
 <a href="/logout">
-<button class="btn-amarelo">
-Sair
-</button>
+<button class="sair">Sair</button>
 </a>
 
 </div>
@@ -222,6 +221,7 @@ Sair
 <form method="POST">
 
 <label>Nome do Projeto</label>
+
 <input
 type="text"
 name="nome"
@@ -229,6 +229,7 @@ placeholder="Ex: Sistema DIM"
 required>
 
 <label>Descrição</label>
+
 <textarea
 name="descricao"
 placeholder="Descreva o objetivo do projeto"></textarea>

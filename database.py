@@ -64,6 +64,19 @@ def criar_banco():
     """)
 
 
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS comentarios(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        tarefa_id INTEGER NOT NULL,
+        usuario_id INTEGER NOT NULL,
+        comentario TEXT NOT NULL,
+        data TEXT,
+        FOREIGN KEY(tarefa_id) REFERENCES tarefas(id),
+        FOREIGN KEY(usuario_id) REFERENCES usuarios(id)
+    )
+    """)
+
+
     conexao.commit()
     conexao.close()
 

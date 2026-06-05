@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+<meta charset="UTF-8">
+<title>Comentários - DIM</title>
+
+<style>
+
+body{
+    font-family:Arial,sans-serif;
+    background:#f4f6f9;
+    padding:30px;
+}
+
+.container{
+    max-width:900px;
+    margin:auto;
+}
+
+.card{
+    background:white;
+    padding:25px;
+    border-radius:15px;
+    margin-bottom:20px;
+    box-shadow:0 2px 10px rgba(0,0,0,0.1);
+}
+
+h1{
+    color:#2f5fb3;
+}
+
+textarea{
+    width:100%;
+    height:120px;
+    padding:10px;
+    border-radius:10px;
+    border:1px solid #ccc;
+}
+
+button{
+    background:#f4c542;
+    border:none;
+    padding:12px 20px;
+    border-radius:10px;
+    font-weight:bold;
+    cursor:pointer;
+    margin-top:10px;
+}
+
+.comentario{
+    background:#f8f8f8;
+    padding:15px;
+    border-radius:10px;
+    margin-top:10px;
+}
+
+.data{
+    color:gray;
+    font-size:12px;
+}
+
+.voltar{
+    display:inline-block;
+    margin-top:20px;
+    text-decoration:none;
+    color:#2f5fb3;
+    font-weight:bold;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="card">
+
+<h1>Comentários</h1>
+
+<p>
+<strong>Tarefa:</strong>
+{{ tarefa[1] }}
+</p>
+
+<form method="POST">
+
+<textarea
+name="comentario"
+placeholder="Digite um comentário..."
+required></textarea>
+
+<button type="submit">
+Adicionar Comentário
+</button>
+
+</form>
+
+</div>
+
+<div class="card">
+
+<h2>Histórico de Comentários</h2>
+
+{% for comentario in comentarios %}
+
+<div class="comentario">
+
+<strong>{{ comentario[2] }}</strong>
+
+<p>{{ comentario[0] }}</p>
+
+<div class="data">
+{{ comentario[1] }}
+</div>
+
+</div>
+
+{% endfor %}
+
+<a href="/dashboard" class="voltar">
+← Voltar para Dashboard
+</a>
+
+</div>
+
+</div>
+
+</body>
+</html>

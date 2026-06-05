@@ -7,7 +7,6 @@ app.secret_key = "dim123"
 
 
 def get_db():
-
     conexao = sqlite3.connect("dim.db")
     return conexao
 
@@ -35,14 +34,11 @@ def login():
         """, (email, senha))
 
         usuario = cursor.fetchone()
-
         conexao.close()
 
         if usuario:
-
             session["usuario_id"] = usuario[0]
             session["nome"] = usuario[1]
-
             return redirect("/dashboard")
 
         return "Email ou senha inválidos"
@@ -63,11 +59,7 @@ def cadastro():
         cursor = conexao.cursor()
 
         cursor.execute("""
-        INSERT INTO usuarios(
-            nome,
-            email,
-            senha
-        )
+        INSERT INTO usuarios(nome, email, senha)
         VALUES(?,?,?)
         """, (nome, email, senha))
 
@@ -88,24 +80,6 @@ def projetos():
     conexao = get_db()
     cursor = conexao.cursor()
 
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS projetos(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        nome TEXT NOT NULL,
-        descricao TEXT,
-        gerente_id INTEGER NOT NULL
-    )
-    """)
-
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS projeto_membros(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        projeto_id INTEGER NOT NULL,
-        usuario_id INTEGER NOT NULL,
-        papel TEXT DEFAULT 'Membro'
-    )
-    """)
-
     if request.method == "POST":
 
         nome = request.form.get("nome")
@@ -114,69 +88,39 @@ def projetos():
         if nome:
 
             cursor.execute("""
-            INSERT INTO projetos(
-                nome,
-                descricao,
-                gerente_id
-            )
+            INSERT INTO projetos(nome, descricao, gerente_id)
             VALUES(?,?,?)
-            """, (
-                nome,
-                descricao,
-                session["usuario_id"]
-            ))
+            """, (nome, descricao, session["usuario_id"]))
 
             projeto_id = cursor.lastrowid
 
             cursor.execute("""
-            INSERT INTO projeto_membros(
-                projeto_id,
-                usuario_id,
-                papel
-            )
+            INSERT INTO projeto_membros(projeto_id, usuario_id, papel)
             VALUES(?,?,?)
-            """, (
-                projeto_id,
-                session["usuario_id"],
-                "Gerente"
-            ))
+            """, (projeto_id, session["usuario_id"], "Gerente"))
 
             cursor.execute("""
-            INSERT INTO historico(
-                mensagem
-            )
+            INSERT INTO historico(mensagem)
             VALUES(?)
-            """, (
-                f'{session["nome"]} criou o projeto "{nome}"',
-            ))
+            """, (f'{session["nome"]} criou o projeto "{nome}"',))
 
             conexao.commit()
 
     cursor.execute("""
-    SELECT DISTINCT
-        projetos.id,
-        projetos.nome,
-        projetos.descricao,
-        projetos.gerente_id
+    SELECT DISTINCT projetos.id, projetos.nome, projetos.descricao, projetos.gerente_id
     FROM projetos
     LEFT JOIN projeto_membros
     ON projetos.id = projeto_membros.projeto_id
     WHERE projetos.gerente_id=?
     OR projeto_membros.usuario_id=?
     ORDER BY projetos.id DESC
-    """, (
-        session["usuario_id"],
-        session["usuario_id"]
-    ))
+    """, (session["usuario_id"], session["usuario_id"]))
 
     projetos = cursor.fetchall()
 
     conexao.close()
 
-    return render_template(
-        "projetos.html",
-        projetos=projetos
-    )
+    return render_template("projetos.html", projetos=projetos)
 
 
 @app.route("/selecionar_projeto/<int:id>")
@@ -193,15 +137,11 @@ def selecionar_projeto(id):
     FROM projetos
     WHERE id=?
     AND gerente_id=?
-    """, (
-        id,
-        session["usuario_id"]
-    ))
+    """, (id, session["usuario_id"]))
 
     projeto = cursor.fetchone()
 
     if projeto:
-
         session["projeto_id"] = projeto[0]
         session["projeto_nome"] = projeto[1]
 
@@ -228,22 +168,6 @@ def dashboard():
     conexao = get_db()
     cursor = conexao.cursor()
 
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS historico(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        mensagem TEXT
-    )
-    """)
-
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS projetos(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        nome TEXT NOT NULL,
-        descricao TEXT,
-        gerente_id INTEGER NOT NULL
-    )
-    """)
-
     projeto_id = session.get("projeto_id")
     projeto_nome = session.get("projeto_nome")
 
@@ -257,14 +181,7 @@ def dashboard():
         if tarefa:
 
             cursor.execute("""
-            INSERT INTO tarefas(
-                tarefa,
-                usuario_id,
-                projeto_id,
-                prioridade,
-                prazo,
-                responsavel
-            )
+            INSERT INTO tarefas(tarefa, usuario_id, projeto_id, prioridade, prazo, responsavel)
             VALUES(?,?,?,?,?,?)
             """, (
                 tarefa,
@@ -276,21 +193,14 @@ def dashboard():
             ))
 
             if projeto_nome:
-
                 mensagem = f'{session["nome"]} criou "{tarefa}" no projeto "{projeto_nome}"'
-
             else:
-
                 mensagem = f'{session["nome"]} criou "{tarefa}"'
 
             cursor.execute("""
-            INSERT INTO historico(
-                mensagem
-            )
+            INSERT INTO historico(mensagem)
             VALUES(?)
-            """, (
-                mensagem,
-            ))
+            """, (mensagem,))
 
             conexao.commit()
 
@@ -299,56 +209,32 @@ def dashboard():
     if projeto_id:
 
         cursor.execute("""
-        SELECT
-            id,
-            tarefa,
-            status,
-            usuario_id,
-            prioridade,
-            prazo,
-            responsavel
+        SELECT id, tarefa, status, usuario_id, prioridade, prazo, responsavel
         FROM tarefas
         WHERE usuario_id=?
         AND projeto_id=?
-        """, (
-            session["usuario_id"],
-            projeto_id
-        ))
+        """, (session["usuario_id"], projeto_id))
 
     else:
 
         cursor.execute("""
-        SELECT
-            id,
-            tarefa,
-            status,
-            usuario_id,
-            prioridade,
-            prazo,
-            responsavel
+        SELECT id, tarefa, status, usuario_id, prioridade, prazo, responsavel
         FROM tarefas
         WHERE usuario_id=?
-        """, (
-            session["usuario_id"],
-        ))
+        """, (session["usuario_id"],))
 
     tarefas = cursor.fetchall()
 
     if busca:
-
         tarefas = [
-
             t for t in tarefas
-
             if busca.lower() in str(t[1]).lower()
             or busca.lower() in str(t[6]).lower()
             or busca.lower() in str(t[4]).lower()
             or busca.lower() in str(t[2]).lower()
-
         ]
 
     tarefas_novas = []
-
     hoje = date.today()
 
     for tarefa in tarefas:
@@ -362,17 +248,12 @@ def dashboard():
 
             try:
 
-                prazo = datetime.strptime(
-                    tarefa[5],
-                    "%Y-%m-%d"
-                ).date()
+                prazo = datetime.strptime(tarefa[5], "%Y-%m-%d").date()
 
                 if prazo < hoje and tarefa[2] != "Concluído":
-
                     atrasada = True
 
                 elif hoje <= prazo <= hoje + timedelta(days=2):
-
                     proximo = True
 
             except:
@@ -424,31 +305,20 @@ def tarefas():
     cursor = conexao.cursor()
 
     cursor.execute("""
-    SELECT
-        tarefas.id,
-        tarefas.tarefa,
-        tarefas.status,
-        tarefas.prioridade,
-        tarefas.prazo,
-        tarefas.responsavel,
-        projetos.nome
+    SELECT tarefas.id, tarefas.tarefa, tarefas.status, tarefas.prioridade,
+           tarefas.prazo, tarefas.responsavel, projetos.nome
     FROM tarefas
     LEFT JOIN projetos
     ON tarefas.projeto_id = projetos.id
     WHERE tarefas.usuario_id=?
     ORDER BY tarefas.id DESC
-    """, (
-        session["usuario_id"],
-    ))
+    """, (session["usuario_id"],))
 
     tarefas = cursor.fetchall()
 
     conexao.close()
 
-    return render_template(
-        "tarefas.html",
-        tarefas=tarefas
-    )
+    return render_template("tarefas.html", tarefas=tarefas)
 
 
 @app.route("/notificacoes")
@@ -471,10 +341,7 @@ def notificacoes():
 
     conexao.close()
 
-    return render_template(
-        "notificacoes.html",
-        notificacoes=notificacoes
-    )
+    return render_template("notificacoes.html", notificacoes=notificacoes)
 
 
 @app.route("/perfil")
@@ -490,9 +357,7 @@ def perfil():
     SELECT nome, email
     FROM usuarios
     WHERE id=?
-    """, (
-        session["usuario_id"],
-    ))
+    """, (session["usuario_id"],))
 
     usuario = cursor.fetchone()
 
@@ -500,9 +365,7 @@ def perfil():
     SELECT COUNT(*)
     FROM tarefas
     WHERE usuario_id=?
-    """, (
-        session["usuario_id"],
-    ))
+    """, (session["usuario_id"],))
 
     total_tarefas = cursor.fetchone()[0]
 
@@ -511,9 +374,7 @@ def perfil():
     FROM tarefas
     WHERE usuario_id=?
     AND status='Concluído'
-    """, (
-        session["usuario_id"],
-    ))
+    """, (session["usuario_id"],))
 
     tarefas_concluidas = cursor.fetchone()[0]
 
@@ -537,9 +398,7 @@ def mudar(id, status):
     SELECT tarefa
     FROM tarefas
     WHERE id=?
-    """, (
-        id,
-    ))
+    """, (id,))
 
     tarefa = cursor.fetchone()
 
@@ -547,21 +406,14 @@ def mudar(id, status):
     UPDATE tarefas
     SET status=?
     WHERE id=?
-    """, (
-        status,
-        id
-    ))
+    """, (status, id))
 
     if tarefa:
 
         cursor.execute("""
-        INSERT INTO historico(
-            mensagem
-        )
+        INSERT INTO historico(mensagem)
         VALUES(?)
-        """, (
-            f'{session["nome"]} moveu "{tarefa[0]}" para {status}',
-        ))
+        """, (f'{session["nome"]} moveu "{tarefa[0]}" para {status}',))
 
     conexao.commit()
     conexao.close()
@@ -579,35 +431,151 @@ def excluir(id):
     SELECT tarefa
     FROM tarefas
     WHERE id=?
-    """, (
-        id,
-    ))
+    """, (id,))
 
     tarefa = cursor.fetchone()
 
     if tarefa:
 
         cursor.execute("""
-        INSERT INTO historico(
-            mensagem
-        )
+        INSERT INTO historico(mensagem)
         VALUES(?)
-        """, (
-            f'{session["nome"]} excluiu "{tarefa[0]}"',
-        ))
+        """, (f'{session["nome"]} excluiu "{tarefa[0]}"',))
 
     cursor.execute("""
     DELETE FROM tarefas
     WHERE id=?
-    """, (
-        id,
-    ))
+    """, (id,))
 
     conexao.commit()
     conexao.close()
 
     return redirect("/dashboard")
 
+
+@app.route("/editar/<int:id>", methods=["GET", "POST"])
+def editar(id):
+
+    if "usuario_id" not in session:
+        return redirect("/login")
+
+    conexao = get_db()
+    cursor = conexao.cursor()
+
+    if request.method == "POST":
+
+        tarefa = request.form.get("tarefa")
+        prioridade = request.form.get("prioridade")
+        prazo = request.form.get("prazo")
+        responsavel = request.form.get("responsavel")
+
+        cursor.execute("""
+        UPDATE tarefas
+        SET tarefa=?,
+            prioridade=?,
+            prazo=?,
+            responsavel=?
+        WHERE id=?
+        """, (tarefa, prioridade, prazo, responsavel, id))
+
+        cursor.execute("""
+        INSERT INTO historico(mensagem)
+        VALUES(?)
+        """, (f'{session["nome"]} editou a tarefa "{tarefa}"',))
+
+        conexao.commit()
+        conexao.close()
+
+        return redirect("/dashboard")
+
+    cursor.execute("""
+    SELECT *
+    FROM tarefas
+    WHERE id=?
+    """, (id,))
+
+    tarefa = cursor.fetchone()
+
+    conexao.close()
+
+    return render_template("editar_tarefa.html", tarefa=tarefa)
+
+
+@app.route("/comentarios/<int:tarefa_id>", methods=["GET", "POST"])
+def comentarios(tarefa_id):
+
+    if "usuario_id" not in session:
+        return redirect("/login")
+
+    conexao = get_db()
+    cursor = conexao.cursor()
+
+    cursor.execute("""
+    SELECT id, tarefa
+    FROM tarefas
+    WHERE id=?
+    """, (tarefa_id,))
+
+    tarefa = cursor.fetchone()
+
+    if not tarefa:
+        conexao.close()
+        return redirect("/dashboard")
+
+    if request.method == "POST":
+
+        comentario = request.form.get("comentario")
+
+        if comentario:
+
+            data = datetime.now().strftime("%d/%m/%Y %H:%M")
+
+            cursor.execute("""
+            INSERT INTO comentarios(
+                tarefa_id,
+                usuario_id,
+                comentario,
+                data
+            )
+            VALUES(?,?,?,?)
+            """, (
+                tarefa_id,
+                session["usuario_id"],
+                comentario,
+                data
+            ))
+
+            cursor.execute("""
+            INSERT INTO historico(
+                mensagem
+            )
+            VALUES(?)
+            """, (
+                f'{session["nome"]} comentou na tarefa "{tarefa[1]}"',
+            ))
+
+            conexao.commit()
+
+    cursor.execute("""
+    SELECT comentarios.comentario,
+           comentarios.data,
+           usuarios.nome
+    FROM comentarios
+    JOIN usuarios
+    ON comentarios.usuario_id = usuarios.id
+    WHERE comentarios.tarefa_id=?
+    ORDER BY comentarios.id DESC
+    """, (tarefa_id,))
+
+    comentarios = cursor.fetchall()
+
+    conexao.close()
+
+    return render_template(
+        "comentarios.html",
+        tarefa=tarefa,
+        comentarios=comentarios
+    )
 
 @app.route("/logout")
 def logout():

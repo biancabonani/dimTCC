@@ -577,6 +577,55 @@ def comentarios(tarefa_id):
         comentarios=comentarios
     )
 
+@app.route("/editar_perfil", methods=["GET", "POST"])
+def editar_perfil():
+
+    if "usuario_id" not in session:
+        return redirect("/login")
+
+    conexao = get_db()
+    cursor = conexao.cursor()
+
+    if request.method == "POST":
+
+        nome = request.form["nome"]
+        email = request.form["email"]
+
+        cursor.execute("""
+        UPDATE usuarios
+        SET nome=?, email=?
+        WHERE id=?
+        """, (
+            nome,
+            email,
+            session["usuario_id"]
+        ))
+
+        conexao.commit()
+
+        session["nome"] = nome
+
+        conexao.close()
+
+        return redirect("/perfil")
+
+    cursor.execute("""
+    SELECT nome, email
+    FROM usuarios
+    WHERE id=?
+    """, (
+        session["usuario_id"],
+    ))
+
+    usuario = cursor.fetchone()
+
+    conexao.close()
+
+    return render_template(
+        "editar_perfil.html",
+        usuario=usuario
+    )
+
 @app.route("/logout")
 def logout():
 

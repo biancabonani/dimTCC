@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+<meta charset="UTF-8">
+<title>Editar Perfil - DIM</title>
+
+<style>
+
+body{
+    font-family:Arial,sans-serif;
+    background:#f4f6f9;
+    padding:30px;
+}
+
+.container{
+    max-width:700px;
+    margin:auto;
+}
+
+.card{
+    background:white;
+    padding:30px;
+    border-radius:15px;
+    box-shadow:0 2px 10px rgba(0,0,0,0.1);
+}
+
+h1{
+    color:#2f5fb3;
+    text-align:center;
+    margin-bottom:30px;
+}
+
+label{
+    display:block;
+    margin-top:15px;
+    font-weight:bold;
+}
+
+input{
+    width:100%;
+    padding:12px;
+    border:1px solid #ccc;
+    border-radius:8px;
+    margin-top:5px;
+}
+
+button{
+    background:#FBC02D;
+    color:black;
+    border:none;
+    padding:14px 25px;
+    border-radius:10px;
+    font-weight:bold;
+    cursor:pointer;
+    margin-top:25px;
+}
+
+.voltar{
+    margin-left:10px;
+    text-decoration:none;
+    color:#2f5fb3;
+    font-weight:bold;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="card">
+
+<h1>Editar Perfil</h1>
+
+<form method="POST">
+
+<label>Nome</label>
+<input
+type="text"
+name="nome"
+value="{{ usuario[0] }}"
+required>
+
+<label>Email</label>
+<input
+type="email"
+name="email"
+value="{{ usuario[1] }}"
+required>
+
+<button type="submit">
+Salvar Alterações
+</button>
+
+<a href="/perfil" class="voltar">
+Cancelar
+</a>
+
+</form>
+
+</div>
+
+</div>
+
+</body>
+</html>
